@@ -1,0 +1,19 @@
+import mysql.connector
+
+mydb = mysql.connector.connect(
+  host="database-1.cmss5jeqjeiq.us-east-1.rds.amazonaws.com",
+  user="admin",
+  password="rootroot"
+)
+
+print(mydb)
+
+mycursor = mydb.cursor()
+
+mycursor.execute("use pandu;")
+mycursor.execute("select * from pan;")
+
+for x in mycursor:
+    print(x)
+
+mydb.close()
