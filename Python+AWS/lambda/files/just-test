@@ -1,0 +1,22 @@
+import json
+import boto3
+import datetime
+
+def lambda_handler(event, context):
+    # TODO implement
+    s3_client = boto3.resource('s3')
+    su = s3_client.ObjectSummary('test-bucket-pandu','sam.pdf')
+    t = su.last_modified
+    t = t + datetime.timedelta(hours=5,minutes=30)
+    e = su.e_tag
+    o = su.owner
+    s = su.size
+    st = su.storage_class
+    print(t,e,o,s,st)
+    print(type(t))
+    
+    return {
+        'statusCode': 200,
+        'body': json.dumps('Hello from Lambda!')
+    }
+

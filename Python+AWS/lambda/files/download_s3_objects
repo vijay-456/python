@@ -1,0 +1,13 @@
+import boto3
+import base64
+
+s3_client  = boto3.client('s3')
+
+def lambda_handler(event, context):
+    
+    fileObject = s3_client.get_object(Bucket = 'pandu-pics',Key = 'lmn.zip')
+    
+    content = fileObject['Body'].read()
+
+    return  base64.b64encode(content)
+

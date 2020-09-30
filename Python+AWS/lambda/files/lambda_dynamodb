@@ -1,0 +1,59 @@
+import boto3
+
+
+def operations(bucket_name):
+    #bucket_name = "pandugadu"
+    dynamodb = boto3.resource('dynamodb')
+    #using existing table and printing the table creation data and time.
+    table = dynamodb.Table('customers')
+    print(table.creation_date_time)
+    
+    #creating a new item
+    response = table.put_item(
+        Item = {
+            'id' : 1,
+            'name' : 'vijay',
+            'items' : bucket_name,
+            'rate' : '456',
+        },
+        )
+    print(response)
+        
+    #getting an item
+    response = table.get_item(
+        Key = {
+            'id' : 1,
+        },
+        )
+    print(response['Item'])
+    
+    #updating an item
+    table.update_item(
+        Key = {'id' : 1,},
+        UpdateExpression="SET rate= :value ",
+        ExpressionAttributeValues={ ':value' : 91779, },
+        )
+    response = table.get_item(Key = {'id':1})
+    print(response['Item'])
+    
+    '''
+    #deleting an item
+    table.delete_item(
+        Key = { 'id' : 1 }
+        )
+    print(response['Item'])
+    '''
+    
+def lambda_handler(event, context):
+    s3 = boto3.client('s3')
+
+    # retrieve bucket name and file_key from the S3 event
+    if event:
+        bucket_name = event['Records'][0]['s3']['bucket']['name']
+        file_key = event['Records'][0]['s3']['object']['key']
+        
+    operations(bucket_name)
+    return {
+        'statusCode': 200,
+        }
+

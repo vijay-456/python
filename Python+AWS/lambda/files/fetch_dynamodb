@@ -1,0 +1,40 @@
+import json
+import boto3
+from boto3.dynamodb.conditions import Key,Attr
+
+def lambda_handler(event, context):
+    dynamodb_client = boto3.resource('dynamodb')
+    table = dynamodb_client.Table('S3_Objects_Upload')
+    
+    #Getting an item using a key
+    response = table.get_item(
+        Key = {
+            'Key' : 'sam.pdf',
+        },
+        ) 
+    '''s3 = boto3.resource('s3')
+    dd = s3.Bucket('test-bucket-pandu')
+    qw = dd.creation_date
+    print("hello ra pandu",str(qw))'''
+    
+    s3_client = boto3.resource('s3')
+    su = s3_client.ObjectSummary('test-bucket-pandu','sam.pdf')
+    t = su.last_modified
+    
+   
+    #Getting multiple items using query and resource
+    #Use Key if you are quering using key, else use scan if you are quering using other attribute
+    
+    response = table.query(
+        KeyConditionExpression=Key('Key').eq('new-folder/')
+        )
+    
+    '''    
+    #Getting the items from the table using the attribute size.    
+    respon = table.scan(
+            FilterExpression = Attr('Last-modified').eq("2020-09-17 19:28:05+00:00")
+        )
+    '''
+    return response['Items']
+    
+

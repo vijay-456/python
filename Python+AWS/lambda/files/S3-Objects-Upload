@@ -1,0 +1,47 @@
+import boto3
+import datetime
+
+def operations(bucket_name,file_key,file_size,last_modified,e_tag):
+    dynamodb_client = boto3.resource('dynamodb')
+    table = dynamodb_client.Table('S3_Objects_Upload')         #We can alos use, table = boto3.resource('dynamodb').Table('S3_Objects_Upload')'
+
+    #Inserting an item into the table
+    table.put_item(
+        Item = {
+            'Key'           : file_key,
+            'Bucket-Name'   : bucket_name,
+            'Size'          : file_size,
+            'Last-Modified' : last_modified,
+            'E-Tag'         : e_tag,
+        },
+        )
+    
+def lambda_handler(event, context):
+    s3_client = boto3.client('s3')
+    
+    # retrieve bucket name and file_key from the S3 event
+    if event:
+        bucket_name = event['Records'][0]['s3']['bucket']['name']
+        file_key = event['Records'][0]['s3']['object']['key']
+    
+    s3_resource = boto3.resource('s3')
+    object_summary = s3_resource.ObjectSummary(bucket_name,file_key)
+    
+    time_stamp = object_summary.last_modified
+
+    # Adding Indian Standard Time(IST)--5hours:30minutes to UTC
+    time_stamp = time_stamp + datetime.timedelta(hours=5,minutes=30)
+    #Converting date time formate to string
+    last_modified = str(time_stamp)
+    
+    file_size = object_summary.size
+    e_tag = object_summary.e_tag
+    
+    
+    operations(bucket_name,file_key,file_size,last_modified,e_tag)
+    
+    print(bucket_name,file_key,file_size,last_modified)
+    return {
+        'statusCode': 200,
+    }
+

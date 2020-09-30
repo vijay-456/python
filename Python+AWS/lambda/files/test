@@ -1,0 +1,11 @@
+import json
+import boto3
+
+s3_client  = boto3.client('s3')
+
+def lambda_handler(event, context):
+    
+    URL =  s3_client.generate_presigned_url("get_object",Params={"Bucket" : 'pandu-pics', "Key" : 'destination_1.jpg'}, ExpiresIn=10)
+
+    return URL
+

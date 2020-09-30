@@ -1,0 +1,13 @@
+import json
+
+def lambda_handler(event, context):
+    #myPar = event['myParam']
+    #x = event['queryStringParameters']
+    x=event['requestContext']['identity']['sourceIp']
+    print(x)
+    
+    #newParam = event['newParam']
+    return {
+        'statusCode': 200,
+        'body': json.dumps(x)
+    }
